@@ -1,3 +1,13 @@
+
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Random;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /*  
 Name: Evan Glazer
 Course: CNT 4714 Summer 2016 
@@ -6,51 +16,91 @@ Date: May 31, 2016
 Class:  Station.class
 */ 
 public class Station {
-    
-    int sharedPipe;
+    String file = "output.txt";
+    int pipeX;
     int stationNum;
-    int adjacentStation;
+    int pipeY;
     int workLoad;
+    Lock pipeLock = new ReentrantLock();
     
     public Station(int shared, int station, int adj, int load)
     {
-        this.sharedPipe = shared;
+        this.pipeX = shared;
         this.stationNum = station;
-        this.adjacentStation = adj;
+        this.pipeY = adj;
         this.workLoad = load;
     }
     
-
-    public int getSharedPipe() {
-        return sharedPipe;
-    }
-
-    public void setSharedPipe(int sharedPipe) {
-        this.sharedPipe = sharedPipe;
-    }
-
-    public int getStationNum() {
-        return stationNum;
-    }
-
-    public void setStationNum(int stationNum) {
-        this.stationNum = stationNum;
-    }
-
-    public int getAdjacentStation() {
-        return adjacentStation;
-    }
-
-    public void setAdjacentStation(int adjacentStation) {
-        this.adjacentStation = adjacentStation;
-    }
-
-    public int getWorkLoad() {
-        return workLoad;
-    }
-
-    public void setWorkLoad(int workLoad) {
-        this.workLoad = workLoad;
+    public boolean checkLocks(Station adj)
+    {
+        boolean pipeX = false;
+        boolean pipeY = false;
+        
+        if(pipeX = pipeLock.tryLock())
+        {
+             // granted access and pipeX value true
+            // write to console/file
+            
+        
+        }
+        if(pipeY = adj.pipeLock.tryLock())
+        {
+             // granted access and pipeY value true
+            // write to console/file
+        }
+        
+        else if(!(pipeX && pipeY))
+        {
+            if(pipeX)
+            {
+                // unlock pipe and release access
+            }
+            if(pipeY)
+            {
+                // unlock pipe and release access
+            }
+        }
+        
+        return true;
     }
     
+    
+    public void doWork(Station adj)
+    {
+        Random r = new Random();
+        if(checkLocks(adj))
+        {
+            try {
+                Thread.sleep(r.nextInt(100));
+                this.workLoad--;
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Station.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            finally
+            {
+                // unlock threads and release access
+            }
+        
+        } 
+        
+    }
+    
+    
+    // write output.txt - simulate data 
+    public void writeFile(String data)
+    {
+       try {
+            FileWriter writer = new FileWriter(file,true);
+            BufferedWriter buffer  = new BufferedWriter(writer);
+            buffer.write(data);
+            buffer.newLine();
+            buffer.close();
+            writer.close();
+	} 
+       catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
 }

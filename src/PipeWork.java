@@ -23,8 +23,40 @@ public class PipeWork {
     File dir;
     List<Station> station;
     
+    
+    
+    public class worker implements Runnable {
+
+        Station current;
+        Station adj;
+        
+        public worker(Station cur)
+        {
+            current = cur;
+            int pos = station.indexOf(current);
+            if(pos !=0)
+            {
+                adj = station.get(pos - 1);
+            }
+            else
+            {
+                adj = station.get(station.size()-1);
+            }
+        }
+        @Override
+        public void run() {
+            // write to console/ file
+            // sleep for random time, then set station work
+            // check for when station no longer has work
+            
+        }
+    
+    }
+
+   
+    
     // read config.txt - set stations
-    public void readFile() throws FileNotFoundException
+    public List<Station> readFile() throws FileNotFoundException
     {
         dir = new File(file);
         sc = new Scanner(dir);
@@ -48,12 +80,11 @@ public class PipeWork {
                 sharedPipe = i-1;
                 adjacentStation = i-1;
             }
-            
             Station s = new Station(sharedPipe,stationNum,adjacentStation,workLoad);
             station.add(s);
         }
     
-        System.out.println(station.size() +"");
+        return station;
     }
     
     // write output.txt - simulate data 
@@ -72,8 +103,6 @@ public class PipeWork {
             e.printStackTrace();
         }
     }
-    
-    // do work/ check locks
-    
+       
     
 }
