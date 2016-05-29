@@ -33,35 +33,43 @@ public class Station {
     
     public boolean checkLocks(Station adj)
     {
-        boolean pipeX = false;
-        boolean pipeY = false;
-        
-        if(pipeX = pipeLock.tryLock())
+        boolean pipeXCheck = false;
+        boolean pipeYCheck = false;
+        try{
+        if(pipeXCheck = pipeLock.tryLock())
         {
-             // granted access and pipeX value true
+             // granted access/locks and pipeX value true
             // write to console/file
+            writeFile("Station " + stationNum +": granted access to pipe " + pipeX);
             
         
         }
-        if(pipeY = adj.pipeLock.tryLock())
+        if(pipeYCheck = adj.pipeLock.tryLock())
         {
-             // granted access and pipeY value true
+             // granted access/locks and pipeY value true
             // write to console/file
+            writeFile("Station " + stationNum +": granted access to pipe " + pipeY);
         }
-        
-        else if(!(pipeX && pipeY))
-        {
-            if(pipeX)
+        }
+        finally{
+            
+            if(!(pipeXCheck && pipeYCheck))
             {
-                // unlock pipe and release access
-            }
-            if(pipeY)
-            {
-                // unlock pipe and release access
+                if(pipeXCheck)
+                {
+                    // unlock pipe and release access
+                    pipeLock.unlock();
+                    writeFile("Station " + stationNum +":  released access to pipe " + pipeX);
+                }
+                if(pipeYCheck)
+                {
+                    // unlock pipe and release access
+                    adj.pipeLock.unlock();
+                    writeFile("Station " + stationNum +":  released access to pipe " + pipeY);
+                }
             }
         }
-        
-        return true;
+        return pipeXCheck && pipeYCheck;
     }
     
     
@@ -70,8 +78,10 @@ public class Station {
         Random r = new Random();
         if(checkLocks(adj))
         {
+            writeFile("Station " + stationNum +": successfully flows on pipe " + pipeX);
+            writeFile("Station " + stationNum +": successfully flows on pipe " + pipeY);
             try {
-                Thread.sleep(r.nextInt(100));
+                Thread.sleep(r.nextInt(1000));
                 this.workLoad--;
             } catch (InterruptedException ex) {
                 Logger.getLogger(Station.class.getName()).log(Level.SEVERE, null, ex);
@@ -79,6 +89,10 @@ public class Station {
             finally
             {
                 // unlock threads and release access
+                pipeLock.unlock();
+                adj.pipeLock.unlock();
+                writeFile("Station " + stationNum +": released access to pipe " + pipeX);
+                writeFile("Station " + stationNum +": released access to pipe " + pipeY);
             }
         
         } 

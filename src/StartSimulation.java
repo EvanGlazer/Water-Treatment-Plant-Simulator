@@ -22,7 +22,7 @@ public class StartSimulation {
         
         for(Station s: station)
         {
-            new Thread(new PipeWork().new worker(s)).start();
+            new Thread(pipe.new worker(s)).start();
         }
             
     }
